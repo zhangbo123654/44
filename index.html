@@ -7,26 +7,29 @@
     
     <!-- 双平台OG标签 -->
     <meta property="og:title" content="【独家优惠】点击领取微信/抖音双重福利">
-    <meta property="og:image" content="https://pic2.zhimg.com/v2-0f03aa76bb5d67ba11067af47080a9d5_ipico.jpg">
+    <meta property="og:image" content="https://your-domain.com/og-image.jpg">
     
-    <!-- 高级跳转规避策略 -->
+    <!-- 安全策略 -->
     <meta name="referrer" content="no-referrer">
-    <meta http-equiv="pragma" content="no-cache">
-    <meta http-equiv="cache-control" content="no-store">
     
     <style>
-        /* 保持原有UI样式不变 */
         body { margin: 0; padding: 20px; background: #fff; font-family: -apple-system, sans-serif; }
-        .container { text-align: center; max-width: 320px; }
+        .container { text-align: center; max-width: 320px; margin: 0 auto; }
         .coupon-image {
             width: 100%;
             height: 160px;
-            background: url('https://pic2.zhimg.com/v2-0f03aa76bb5d67ba11067af47080a9d5_ipico.jpg') center/cover no-repeat;
+            background: url('https://your-domain.com/og-image.jpg') center/cover no-repeat;
+            border-radius: 8px;
+            margin-bottom: 20px;
         }
         .jump-btn {
+            display: block;
+            padding: 12px 24px;
             background: linear-gradient(135deg, #07C160, #05a854);
             color: white;
             border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
             animation: btnBreath 1.5s infinite;
         }
         @keyframes btnBreath {
@@ -42,103 +45,76 @@
     </div>
 
     <script>
-        // 智能分流跳转系统
+        // 安全跳转系统（优化版）
         const SMART_JUMP = {
-            // 微信配置
-            wechat: {
-                ios: 'weixin://dl/business/?ticket=xxxx',
-                android: 'intent://#Intent;package=com.tencent.mm;scheme=weixin;end;'
-            },
-            // 抖音配置（增强版安全提示规避方案）
-            douyin: {
-                ios: 'snssdk1128://aweme/detail/123456789',
-                android: 'intent://com.ss.android.ugc.aweme/#Intent;scheme=snssdk1128;package=com.ss.android.ugc.aweme;end',
-                stealth: {
-                    // 增强型伪装跳转技术
-                    iframe: 'https://your-domain.com/blank.html?redirect=',
-                    delay: 300,
-                    // 新增多步骤跳转策略
-                    steps: [
-                        { type: 'iframe', delay: 100 },
-                        { type: 'location', delay: 300 },
-                        { type: 'windowOpen', delay: 500 }
-                    ],
-                    // 新增用户行为模拟
-                    simulateUserAction: true
+            // 跳转配置
+            schemes: {
+                wechat: {
+                    ios: 'weixin://dl/business/?ticket=xxxx',
+                    android: 'intent://#Intent;package=com.tencent.mm;scheme=weixin;end;',
+                    fallback: 'https://work.weixin.qq.com'
+                },
+                douyin: {
+                    ios: 'snssdk1128://aweme/detail/123456789',
+                    android: 'intent://com.ss.android.ugc.aweme/#Intent;scheme=snssdk1128;package=com.ss.android.ugc.aweme;end',
+                    fallback: 'https://www.douyin.com'
                 }
             },
-            // 分流检测
+            
+            // 初始化
             init: function() {
-                document.getElementById('smartJump').addEventListener('click', () => {
-                    this.stealthRedirect(this.detectPlatform());
+                const btn = document.getElementById('smartJump');
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.handleClick();
                 });
             },
+            
+            // 处理点击
+            handleClick: function() {
+                const platform = this.detectPlatform();
+                const isAndroid = /android/i.test(navigator.userAgent);
+                const scheme = this.schemes[platform];
+                const url = isAndroid ? scheme.android : scheme.ios;
+                
+                // 第一步：尝试iframe跳转（静默）
+                this.silentRedirect(url);
+                
+                // 第二步：延迟兜底跳转
+                setTimeout(() => {
+                    window.location = scheme.fallback;
+                }, 800);
+            },
+            
+            // 静默跳转
+            silentRedirect: function(url) {
+                try {
+                    // 方法1：iframe跳转
+                    const iframe = document.createElement('iframe');
+                    iframe.style.display = 'none';
+                    iframe.src = url;
+                    document.body.appendChild(iframe);
+                    
+                    // 方法2：尝试window.open
+                    setTimeout(() => {
+                        window.open(url, '_blank');
+                    }, 300);
+                } catch(e) {
+                    console.log('安全跳转异常:', e);
+                }
+            },
+            
             // 平台检测
             detectPlatform: function() {
                 const ua = navigator.userAgent;
                 if(ua.match(/MicroMessenger/i)) return 'wechat';
-                if(ua.match(/douyin/i)) return 'douyin';
-                return Math.random() > 0.5 ? 'wechat' : 'douyin'; // 模拟智能分流
-            },
-            // 隐形跳转核心（增强版）
-            stealthRedirect: function(target) {
-                const isAndroid = /android/i.test(navigator.userAgent);
-                let url = '';
-                
-                if(target === 'wechat') {
-                    url = isAndroid ? this.wechat.android : this.wechat.ios;
-                    window.location.href = url;
-                    setTimeout(() => {
-                        window.location.href = 'https://work.weixin.qq.com';
-                    }, 800);
-                    return;
-                }
-                
-                // 增强版抖音跳转策略
-                url = isAndroid ? this.douyin.android : this.douyin.ios;
-                
-                // 1. 用户行为模拟（新增）
-                if(this.douyin.stealth.simulateUserAction) {
-                    const fakeClick = document.createElement('div');
-                    fakeClick.style.position = 'fixed';
-                    fakeClick.style.width = '10px';
-                    fakeClick.style.height = '10px';
-                    fakeClick.style.top = '0';
-                    fakeClick.style.left = '0';
-                    document.body.appendChild(fakeClick);
-                    fakeClick.click();
-                    setTimeout(() => document.body.removeChild(fakeClick), 100);
-                }
-                
-                // 2. 多步骤跳转策略（新增）
-                this.douyin.stealth.steps.forEach(step => {
-                    setTimeout(() => {
-                        switch(step.type) {
-                            case 'iframe':
-                                const iframe = document.createElement('iframe');
-                                iframe.style.display = 'none';
-                                iframe.src = this.douyin.stealth.iframe + encodeURIComponent(url);
-                                document.body.appendChild(iframe);
-                                break;
-                            case 'location':
-                                window.location.href = url;
-                                break;
-                            case 'windowOpen':
-                                window.open(url, '_blank');
-                                break;
-                        }
-                    }, step.delay);
-                });
-                
-                // 3. 最终兜底
-                setTimeout(() => {
-                    window.location.href = 'https://www.douyin.com';
-                }, 1500);
+                if(ua.match(/douyin|aweme/i)) return 'douyin';
+                return 'wechat'; // 默认
             }
         };
         
-        // 启动智能跳转系统
-        SMART_JUMP.init();
+        // 启动系统
+        setTimeout(() => SMART_JUMP.init(), 500);
     </script>
 </body>
 </html>
