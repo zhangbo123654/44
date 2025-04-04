@@ -1,26 +1,172 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN" prefix="og: https://ogp.me/ns#">
 <head>
-    <!-- Open Graph 元数据（必须） -->
-    <meta property="og:title" content="可以的老铁" />
-    <meta property="og:description" content="可以的老铁" />
-    <meta property="og:image" content="https://pics0.baidu.com/feed/ca1349540923dd54988f6a41ac00ecd39c824836.jpeg" /> <!-- 替换为你的图片URL -->
-    <meta property="og:url" content="https://zhangbo123654.github.io/202" /> <!-- 替换为你的网页URL -->
-    <meta property="og:type" content="website" /> <!-- 默认用website -->
-
-    <!-- 可选：Twitter Card（部分平台支持） -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="你的标题" />
-    <meta name="twitter:description" content="描述信息" />
-    <meta name="twitter:image" content="https://example.com/your-image.jpg" />
-
-    <!-- 网页基础信息 -->
-    <title>网页标题（不影响卡片）</title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微信跳转优化版</title>
+    
+    <!-- 添加的 Open Graph 标签 -->
+    <meta property="og:title" content="点击领取优惠，下单立减50元">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://your-website.com/wechat-redirect">
+    <meta property="og:image" content="https://pic2.zhimg.com/v2-0f03aa76bb5d67ba11067af47080a9d5_ipico.jpg">
+    <meta property="og:description" content="点击领取优惠，下单立减50元">
+    <meta property="og:site_name" content="微信跳转优化版">
+    
+    <style>
+        /* 保持原有UI样式 */
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: -apple-system, sans-serif;
+        }
+        .container {
+            text-align: center;
+            max-width: 320px;
+        }
+        .wx-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 25px;
+            background: url('https://wxlin.oss-cn-beijing.aliyuncs.com/wxlogo.png') center/contain no-repeat;
+        }
+        .loading-text {
+            color: #333;
+            font-size: 18px;
+            margin: 0 0 12px;
+        }
+        .tip-text {
+            color: #888;
+            font-size: 14px;
+            margin: 15px 0 25px;
+        }
+        .jump-btn {
+            display: block;
+            width: 220px;
+            margin: 0 auto;
+            padding: 14px;
+            background: #07C160;
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            box-shadow: 0 3px 10px rgba(7,193,96,0.2);
+            animation: btnBreath 1.5s ease-in-out infinite;
+            transform-origin: center;
+        }
+        @keyframes btnBreath {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+        .jump-btn:active {
+            animation-play-state: paused;
+            transform: scale(0.96) !important;
+        }
+        .manual-steps {
+            margin-top: 40px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            text-align: left;
+            font-size: 13px;
+            color: #666;
+        }
+    </style>
 </head>
 <body>
-    <h1>这是一个测试页面</h1>
-    <p>如果看到这个页面，说明OG标签已生效！</p>
+    <!-- 保持原有UI结构 -->
+    <div class="container">
+        <div class="wx-logo"></div>
+        <p class="loading-text">正在启动微信...</p>
+        <p class="tip-text">如未自动跳转请点击下方按钮</p>
+        <a href="javascript:void(0);" class="jump-btn" id="jumpBtn">立即跳转微信</a>
+        
+        <div class="manual-steps">
+            <p>操作指引：</p>
+            <ol>
+                <li>点击上方绿色按钮</li>
+                <li>选择"允许打开"</li>
+                <li>自动跳转微信界面</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // 配置参数（需企业微信后台获取）
+        const CONFIG = {
+            iosScheme: 'weixin://dl/business/?ticket=IOS_TICKET',
+            android: {
+                intent: 'intent://#Intent;package=com.tencent.mm;scheme=weixin;S.browser_fallback_url=https://work.weixin.qq.com;end;',
+                yingyongbao: 'http://a.app.qq.com/o/simple.jsp?pkgname=com.tencent.mm'
+            }
+        };
+
+        document.getElementById('jumpBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            const isAndroid = /android/i.test(navigator.userAgent);
+            let attemptCount = 0;
+
+            // 统一跳转函数
+            const triggerWechat = () => {
+                attemptCount++;
+                
+                // Android增强跳转方案
+                if(isAndroid) {
+                    // 方案1：标准Intent跳转
+                    window.location.href = CONFIG.android.intent;
+                    
+                    // 方案2：应用宝跳转
+                    setTimeout(() => {
+                        window.location.href = CONFIG.android.yingyongbao;
+                    }, 800);
+                    
+                    // 方案3：基础协议跳转
+                    setTimeout(() => {
+                        window.location.href = 'weixin://';
+                    }, 1500);
+                } 
+                // iOS标准跳转
+                else {
+                    window.location.href = CONFIG.iosScheme;
+                }
+            };
+
+            // 打开企业微信页面
+            const workWindow = window.open('https://work.weixin.qq.com/ca/cawcde1764c05d2837', '_blank');
+
+            // 主跳转逻辑
+            setTimeout(() => {
+                this.innerHTML = '正在启动...';
+                this.style.animation = 'none';
+
+                // 创建iframe触发协议
+                const iframe = document.createElement('iframe');
+                iframe.style.cssText = 'display:none;width:0;height:0;';
+                document.body.appendChild(iframe);
+                
+                // 首次跳转尝试
+                iframe.src = isAndroid ? CONFIG.android.intent : CONFIG.iosScheme;
+
+                // 备用跳转方案
+                setTimeout(() => {
+                    triggerWechat();
+                }, 300);
+
+                // 清理资源
+                setTimeout(() => {
+                    iframe.remove();
+                    try {
+                        if(workWindow && !workWindow.closed) workWindow.close();
+                    } catch(err) {
+                        console.log('窗口关闭被阻止');
+                    }
+                }, 3000);
+            }, 800);
+        });
+    </script>
 </body>
 </html>
