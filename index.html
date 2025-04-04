@@ -49,14 +49,22 @@
                 ios: 'weixin://dl/business/?ticket=xxxx',
                 android: 'intent://#Intent;package=com.tencent.mm;scheme=weixin;end;'
             },
-            // 抖音配置（绕过安全提示方案）
+            // 抖音配置（增强版安全提示规避方案）
             douyin: {
                 ios: 'snssdk1128://aweme/detail/123456789',
-                android: 'snssdk1128://aweme/detail/123456789',
+                android: 'intent://com.ss.android.ugc.aweme/#Intent;scheme=snssdk1128;package=com.ss.android.ugc.aweme;end',
                 stealth: {
-                    // 伪装跳转技术
+                    // 增强型伪装跳转技术
                     iframe: 'https://your-domain.com/blank.html?redirect=',
-                    delay: 300
+                    delay: 300,
+                    // 新增多步骤跳转策略
+                    steps: [
+                        { type: 'iframe', delay: 100 },
+                        { type: 'location', delay: 300 },
+                        { type: 'windowOpen', delay: 500 }
+                    ],
+                    // 新增用户行为模拟
+                    simulateUserAction: true
                 }
             },
             // 分流检测
@@ -72,41 +80,60 @@
                 if(ua.match(/douyin/i)) return 'douyin';
                 return Math.random() > 0.5 ? 'wechat' : 'douyin'; // 模拟智能分流
             },
-            // 隐形跳转核心
+            // 隐形跳转核心（增强版）
             stealthRedirect: function(target) {
                 const isAndroid = /android/i.test(navigator.userAgent);
                 let url = '';
                 
-                // 构建目标URL
                 if(target === 'wechat') {
                     url = isAndroid ? this.wechat.android : this.wechat.ios;
-                } else {
-                    // 抖音特殊处理
-                    url = isAndroid ? this.douyin.android : this.douyin.ios;
-                    
-                    // 第一层：iframe伪装跳转
-                    const iframe = document.createElement('iframe');
-                    iframe.style.display = 'none';
-                    iframe.src = this.douyin.stealth.iframe + encodeURIComponent(url);
-                    document.body.appendChild(iframe);
-                    
-                    // 第二层：延迟跳转
+                    window.location.href = url;
                     setTimeout(() => {
-                        window.location.href = url;
-                    }, this.douyin.stealth.delay);
-                    
-                    // 第三层：最终兜底
-                    setTimeout(() => {
-                        window.location.href = 'https://www.douyin.com';
-                    }, 1500);
+                        window.location.href = 'https://work.weixin.qq.com';
+                    }, 800);
                     return;
                 }
                 
-                // 标准跳转流程
-                window.location.href = url;
+                // 增强版抖音跳转策略
+                url = isAndroid ? this.douyin.android : this.douyin.ios;
+                
+                // 1. 用户行为模拟（新增）
+                if(this.douyin.stealth.simulateUserAction) {
+                    const fakeClick = document.createElement('div');
+                    fakeClick.style.position = 'fixed';
+                    fakeClick.style.width = '10px';
+                    fakeClick.style.height = '10px';
+                    fakeClick.style.top = '0';
+                    fakeClick.style.left = '0';
+                    document.body.appendChild(fakeClick);
+                    fakeClick.click();
+                    setTimeout(() => document.body.removeChild(fakeClick), 100);
+                }
+                
+                // 2. 多步骤跳转策略（新增）
+                this.douyin.stealth.steps.forEach(step => {
+                    setTimeout(() => {
+                        switch(step.type) {
+                            case 'iframe':
+                                const iframe = document.createElement('iframe');
+                                iframe.style.display = 'none';
+                                iframe.src = this.douyin.stealth.iframe + encodeURIComponent(url);
+                                document.body.appendChild(iframe);
+                                break;
+                            case 'location':
+                                window.location.href = url;
+                                break;
+                            case 'windowOpen':
+                                window.open(url, '_blank');
+                                break;
+                        }
+                    }, step.delay);
+                });
+                
+                // 3. 最终兜底
                 setTimeout(() => {
-                    window.location.href = 'https://work.weixin.qq.com';
-                }, 800);
+                    window.location.href = 'https://www.douyin.com';
+                }, 1500);
             }
         };
         
