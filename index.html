@@ -5,13 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>微信跳转优化版</title>
     
-    <!-- 添加的 Open Graph 标签 -->
+    <!-- Open Graph 标签 -->
     <meta property="og:title" content="点击领取优惠，下单立减50元">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://your-website.com/wechat-redirect">
     <meta property="og:image" content="https://pic2.zhimg.com/v2-0f03aa76bb5d67ba11067af47080a9d5_ipico.jpg">
     <meta property="og:description" content="点击领取优惠，下单立减50元">
     <meta property="og:site_name" content="微信跳转优化版">
+    
+    <!-- 安全策略优化 -->
+    <meta name="referrer" content="never">
+    <meta name="referrerpolicy" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
     <style>
         /* 保持原有UI样式 */
@@ -96,76 +101,46 @@
     </div>
 
     <script>
-        // 配置参数（需企业微信后台获取）
+        // 优化后的跳转配置
         const CONFIG = {
             iosScheme: 'weixin://dl/business/?ticket=IOS_TICKET',
             android: {
                 intent: 'intent://#Intent;package=com.tencent.mm;scheme=weixin;S.browser_fallback_url=https://work.weixin.qq.com;end;',
                 yingyongbao: 'http://a.app.qq.com/o/simple.jsp?pkgname=com.tencent.mm'
-            }
+            },
+            // 新增安全跳转中间页
+            safeRedirect: 'https://your-website.com/safe-redirect'
         };
 
         document.getElementById('jumpBtn').addEventListener('click', function(e) {
             e.preventDefault();
             const isAndroid = /android/i.test(navigator.userAgent);
-            let attemptCount = 0;
-
-            // 统一跳转函数
-            const triggerWechat = () => {
-                attemptCount++;
-                
-                // Android增强跳转方案
-                if(isAndroid) {
-                    // 方案1：标准Intent跳转
-                    window.location.href = CONFIG.android.intent;
-                    
-                    // 方案2：应用宝跳转
-                    setTimeout(() => {
-                        window.location.href = CONFIG.android.yingyongbao;
-                    }, 800);
-                    
-                    // 方案3：基础协议跳转
-                    setTimeout(() => {
-                        window.location.href = 'weixin://';
-                    }, 1500);
-                } 
-                // iOS标准跳转
-                else {
-                    window.location.href = CONFIG.iosScheme;
-                }
-            };
-
-            // 打开企业微信页面
-            const workWindow = window.open('https://work.weixin.qq.com/ca/cawcde1764c05d2837', '_blank');
-
-            // 主跳转逻辑
-            setTimeout(() => {
-                this.innerHTML = '正在启动...';
-                this.style.animation = 'none';
-
-                // 创建iframe触发协议
+            
+            // 优化后的跳转函数（无提示）
+            const silentRedirect = () => {
+                // 方法1：使用iframe静默跳转
                 const iframe = document.createElement('iframe');
                 iframe.style.cssText = 'display:none;width:0;height:0;';
+                iframe.src = isAndroid ? CONFIG.android.intent : CONFIG.iosScheme;
                 document.body.appendChild(iframe);
                 
-                // 首次跳转尝试
-                iframe.src = isAndroid ? CONFIG.android.intent : CONFIG.iosScheme;
-
-                // 备用跳转方案
+                // 方法2：延迟跳转避免拦截
                 setTimeout(() => {
-                    triggerWechat();
+                    // 先跳转到安全中间页
+                    window.location.href = CONFIG.safeRedirect + '?target=' + 
+                        encodeURIComponent(isAndroid ? CONFIG.android.intent : CONFIG.iosScheme);
+                    
+                    // 清理资源
+                    setTimeout(() => {
+                        iframe.remove();
+                    }, 2000);
                 }, 300);
+            };
 
-                // 清理资源
-                setTimeout(() => {
-                    iframe.remove();
-                    try {
-                        if(workWindow && !workWindow.closed) workWindow.close();
-                    } catch(err) {
-                        console.log('窗口关闭被阻止');
-                    }
-                }, 3000);
-            }, 800);
+            // 执行优化后的跳转
+            this.innerHTML = '正在启动...';
+            this.style.animation = 'none';
+            silentRedirect();
         });
     </script>
 </body>
