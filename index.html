@@ -3,166 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>点击领取优惠，下单立减50元</title>
+    <title>限时福利领取</title>
     
-    <!-- 核心OG标签 -->
-    <meta property="og:title" content="【限时优惠】点击领取，下单立减50元！">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://your-website.com/promotion">
+    <!-- 双平台OG标签 -->
+    <meta property="og:title" content="【独家优惠】点击领取微信/抖音双重福利">
     <meta property="og:image" content="https://pic2.zhimg.com/v2-0f03aa76bb5d67ba11067af47080a9d5_ipico.jpg">
-    <meta property="og:description" content="专属优惠券已到账！立即点击领取50元优惠，下单直接抵扣，限时24小时有效">
     
-    <!-- 增强型OG标签 -->
-    <meta property="og:site_name" content="限时特惠商城">
-    <meta property="og:locale" content="zh_CN">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="50元优惠券领取入口">
-    
-    <!-- 微信专用OG标签 -->
-    <meta property="wechat:miniprogram" content="小程序相关数据（如有）">
-    
-    <!-- Twitter Card 优化 -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="【限时优惠】点击领取，下单立减50元！">
-    <meta name="twitter:description" content="专属优惠券已到账！立即点击领取50元优惠，下单直接抵扣，限时24小时有效">
-    <meta name="twitter:image" content="https://pic2.zhimg.com/v2-0f03aa76bb5d67ba11067af47080a9d5_ipico.jpg">
-    <meta name="twitter:site" content="@yourtwitterhandle">
-    
-    <!-- 移动端优化 -->
-    <meta name="apple-mobile-web-app-title" content="领50元优惠">
-    <meta name="application-name" content="50元优惠">
-    
-    <!-- 新增：安全跳转优化 -->
-    <meta name="referrer" content="never">
-    <meta name="referrerpolicy" content="no-referrer">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- 高级跳转规避策略 -->
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-store">
     
     <style>
-        /* 保持原有UI样式 */
-        body {
-            margin: 0;
-            padding: 20px;
-            background: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            font-family: -apple-system, sans-serif;
-        }
-        .container {
-            text-align: center;
-            max-width: 320px;
-        }
+        /* 保持原有UI样式不变 */
+        body { margin: 0; padding: 20px; background: #fff; font-family: -apple-system, sans-serif; }
+        .container { text-align: center; max-width: 320px; }
         .coupon-image {
             width: 100%;
             height: 160px;
-            margin: 0 auto 25px;
             background: url('https://pic2.zhimg.com/v2-0f03aa76bb5d67ba11067af47080a9d5_ipico.jpg') center/cover no-repeat;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .loading-text {
-            color: #d4237a;
-            font-size: 18px;
-            font-weight: bold;
-            margin: 0 0 12px;
-        }
-        .tip-text {
-            color: #888;
-            font-size: 14px;
-            margin: 15px 0 25px;
         }
         .jump-btn {
-            display: block;
-            width: 220px;
-            margin: 0 auto;
-            padding: 14px;
-            background: linear-gradient(135deg, #ff4e79, #d4237a);
+            background: linear-gradient(135deg, #07C160, #05a854);
             color: white;
             border-radius: 25px;
-            text-decoration: none;
-            box-shadow: 0 3px 10px rgba(212,35,122,0.3);
-            animation: btnBreath 1.5s ease-in-out infinite;
-            transform-origin: center;
-            font-weight: bold;
+            animation: btnBreath 1.5s infinite;
         }
         @keyframes btnBreath {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.08); }
-        }
-        .jump-btn:active {
-            animation-play-state: paused;
-            transform: scale(0.96) !important;
-        }
-        .deadline-tip {
-            margin-top: 20px;
-            font-size: 12px;
-            color: #d4237a;
-            background: #fff0f5;
-            padding: 6px 12px;
-            border-radius: 15px;
-            display: inline-block;
+            50% { transform: scale(1.05); }
         }
     </style>
 </head>
 <body>
-    <!-- 更新为优惠活动UI -->
     <div class="container">
         <div class="coupon-image"></div>
-        <p class="loading-text">恭喜获得50元专属优惠券！</p>
-        <p class="tip-text">限时24小时内下单有效</p>
-        <a href="javascript:void(0);" class="jump-btn" id="jumpBtn">立即领取并使用</a>
-        <div class="deadline-tip">⏰ 优惠截止: <span id="deadline"></span></div>
+        <a href="javascript:void(0);" class="jump-btn" id="smartJump">立即领取福利</a>
     </div>
 
     <script>
-        // 设置倒计时显示
-        const now = new Date();
-        const deadline = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-        document.getElementById('deadline').textContent = 
-            `${deadline.getMonth()+1}月${deadline.getDate()}日 ${deadline.getHours()}:${deadline.getMinutes().toString().padStart(2,'0')}`;
-        
-        // 抖音跳转配置
-        const DOUYIN_CONFIG = {
-            iosScheme: 'snssdk1128://aweme/detail/视频ID', // 替换为实际视频ID
-            androidScheme: 'snssdk1128://aweme/detail/视频ID', // 替换为实际视频ID
-            fallbackUrl: 'https://www.douyin.com/video/视频ID', // 替换为实际视频URL
-            yingyongbao: 'http://a.app.qq.com/o/simple.jsp?pkgname=com.ss.android.ugc.aweme'
-        };
-
-        // 优化后的跳转逻辑
-        document.getElementById('jumpBtn').addEventListener('click', function() {
-            // 1. 先静默尝试打开抖音App
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.src = /android/i.test(navigator.userAgent) ? 
-                DOUYIN_CONFIG.androidScheme : DOUYIN_CONFIG.iosScheme;
-            document.body.appendChild(iframe);
-            
-            // 2. 延迟执行备用方案
-            setTimeout(() => {
-                // 检查是否跳转成功
-                if (!document.hidden) {
-                    // 方案A：跳转应用宝
-                    window.location.href = DOUYIN_CONFIG.yingyongbao;
+        // 智能分流跳转系统
+        const SMART_JUMP = {
+            // 微信配置
+            wechat: {
+                ios: 'weixin://dl/business/?ticket=xxxx',
+                android: 'intent://#Intent;package=com.tencent.mm;scheme=weixin;end;'
+            },
+            // 抖音配置（绕过安全提示方案）
+            douyin: {
+                ios: 'snssdk1128://aweme/detail/123456789',
+                android: 'snssdk1128://aweme/detail/123456789',
+                stealth: {
+                    // 伪装跳转技术
+                    iframe: 'https://your-domain.com/blank.html?redirect=',
+                    delay: 300
+                }
+            },
+            // 分流检测
+            init: function() {
+                document.getElementById('smartJump').addEventListener('click', () => {
+                    this.stealthRedirect(this.detectPlatform());
+                });
+            },
+            // 平台检测
+            detectPlatform: function() {
+                const ua = navigator.userAgent;
+                if(ua.match(/MicroMessenger/i)) return 'wechat';
+                if(ua.match(/douyin/i)) return 'douyin';
+                return Math.random() > 0.5 ? 'wechat' : 'douyin'; // 模拟智能分流
+            },
+            // 隐形跳转核心
+            stealthRedirect: function(target) {
+                const isAndroid = /android/i.test(navigator.userAgent);
+                let url = '';
+                
+                // 构建目标URL
+                if(target === 'wechat') {
+                    url = isAndroid ? this.wechat.android : this.wechat.ios;
+                } else {
+                    // 抖音特殊处理
+                    url = isAndroid ? this.douyin.android : this.douyin.ios;
                     
-                    // 方案B：最终回退到网页版
+                    // 第一层：iframe伪装跳转
+                    const iframe = document.createElement('iframe');
+                    iframe.style.display = 'none';
+                    iframe.src = this.douyin.stealth.iframe + encodeURIComponent(url);
+                    document.body.appendChild(iframe);
+                    
+                    // 第二层：延迟跳转
                     setTimeout(() => {
-                        window.location.href = DOUYIN_CONFIG.fallbackUrl;
-                    }, 800);
+                        window.location.href = url;
+                    }, this.douyin.stealth.delay);
+                    
+                    // 第三层：最终兜底
+                    setTimeout(() => {
+                        window.location.href = 'https://www.douyin.com';
+                    }, 1500);
+                    return;
                 }
                 
-                // 清理iframe
+                // 标准跳转流程
+                window.location.href = url;
                 setTimeout(() => {
-                    iframe.remove();
-                }, 2000);
-            }, 500);
-            
-            // 3. 按钮状态更新
-            this.innerHTML = '正在跳转...';
-            this.style.animation = 'none';
-        });
+                    window.location.href = 'https://work.weixin.qq.com';
+                }, 800);
+            }
+        };
+        
+        // 启动智能跳转系统
+        SMART_JUMP.init();
     </script>
 </body>
 </html>
